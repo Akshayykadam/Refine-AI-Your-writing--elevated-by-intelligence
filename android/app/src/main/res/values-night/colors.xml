@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="panel_background">#1F1F1F</color>
+    <color name="text_primary">#F0F0F0</color>
+    <color name="text_secondary">#B0B0B0</color>
+    <color name="input_background">#2C2C2C</color>
+    <color name="btn_primary">#15C39A</color>
+    <color name="btn_text">#121212</color>
+    <color name="divider">#404040</color>
+    <color name="chip_background">#2C2C2C</color>
+    <color name="shadow_color">#40000000</color>
+    <color name="colorPrimary">#15C39A</color>
+    <color name="iconBackground">#1F1F1F</color>
+    <color name="splashscreen_background">#1F1F1F</color>
+</resources>

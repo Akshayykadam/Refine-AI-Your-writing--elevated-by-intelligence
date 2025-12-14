@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/action_panel_background"
+    android:padding="24dp"
+    android:elevation="8dp"
+    android:layout_marginHorizontal="16dp"
+    android:minWidth="340dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="@color/divider"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/divider"/>
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Writing Assistant"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:fontFamily="sans-serif-medium"/>
+            
+        <Button
+            android:id="@+id/btn_close"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="✕"
+            android:textSize="18sp"
+            android:textColor="@color/text_secondary"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:padding="0dp"
+            style="?android:attr/borderlessButtonStyle"/>
+    </LinearLayout>
+
+    <!-- Preview Card -->
+    <TextView
+        android:id="@+id/preview_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Selected text..."
+        android:textSize="16sp"
+        android:lineSpacingMultiplier="1.2"
+        android:ellipsize="end"
+        android:maxLines="6"
+        android:textColor="@color/text_primary"
+        android:background="@drawable/bg_input_field"
+        android:padding="16dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif"/>
+
+    <!-- Inputs Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="0dp"
+        android:visibility="gone"
+        android:gravity="center_vertical">
+
+        <EditText
+            android:id="@+id/input_instruction"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:hint="Add instructions (e.g. 'Make it shorter')"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="14sp"
+            android:background="@drawable/bg_input_field"
+            android:paddingStart="16dp"
+            android:visibility="gone"
+            android:paddingEnd="16dp"
+            android:textColor="@color/text_primary"
+            android:inputType="text"/>
+            
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_char_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0 / 500 characters"
+        android:textColor="@color/colorPrimary"
+        android:textSize="12sp"
+        android:layout_gravity="end"
+        android:layout_marginTop="-8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Chips Row -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="16dp">
+        
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/chip_refine"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Refine"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/chip_grammar"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Grammar"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/chip_professional"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Professional"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/chip_casual"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Casual"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/chip_concise"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Concise"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/chip_warm"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Warm"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/chip_love"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Love"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+
+            <Button
+                android:id="@+id/chip_emojify"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Emojify"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:background="@drawable/selector_chip_background"
+                android:textColor="@color/text_primary"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                style="?android:attr/borderlessButtonStyle"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Main Action Button -->
+    <Button
+        android:id="@+id/btn_rewrite"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Rewrite with AI"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:background="@drawable/bg_btn_primary"
+        android:textColor="@color/btn_text"
+        android:layout_marginBottom="8dp"
+        android:stateListAnimator="@null"/>
+
+    <ProgressBar
+        android:id="@+id/loading_indicator"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/btn_primary"
+        android:visibility="gone"
+        android:layout_marginTop="12dp"/>
+    
+    <!-- Result Actions -->
+    <LinearLayout
+        android:id="@+id/result_actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btn_replace"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="Insert Text"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_btn_primary"
+            android:textColor="@color/btn_text"
+            android:stateListAnimator="@null"/>
+            
+        <Button
+            android:id="@+id/btn_compare"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:text="View Original"
+            android:textAllCaps="false"
+            android:layout_marginStart="12dp"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:background="@drawable/bg_chip"
+            android:stateListAnimator="@null"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"/>
+    </LinearLayout>
+
+</LinearLayout>

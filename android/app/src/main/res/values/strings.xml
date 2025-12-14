@@ -1,0 +1,6 @@
+<resources>
+  <string name="app_name">Refine.AI</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="accessibility_service_description">AI Writing Assistant helps you rewrite text in any app.</string>
+</resources>
