@@ -244,7 +244,7 @@ class OverlayManager(private val context: Context) {
 
             val allChips = listOfNotNull(chipRefine, chipGrammar, chipProfessional, chipCasual, chipConcise, chipWarm, chipLove, chipEmojify)
             
-            var selectedChipInstruction: String? = null
+            var selectedChipInstruction: String? = "Rewrite the text to be clearer, more fluent, and easier to read while preserving the original meaning, intent, and length. Improve grammar, sentence flow, and word choice. Do not add new ideas, remove information, or change the tone. Keep it natural and neutral."
 
             // Chips logic
             val chipListener = View.OnClickListener { v ->
@@ -299,6 +299,10 @@ class OverlayManager(private val context: Context) {
             // ... (focus logic skipped) ...
             
             rewriteBtn?.setOnClickListener {
+                if (BuildConfig.GEMINI_API_KEY.isEmpty()) {
+                    android.widget.Toast.makeText(context, "API Key Missing. Check local.properties.", android.widget.Toast.LENGTH_LONG).show()
+                    return@setOnClickListener
+                }
                 rewriteBtn.visibility = View.GONE
                 loadingIndicator?.visibility = View.VISIBLE
                 resultActions?.visibility = View.GONE

@@ -19,7 +19,7 @@ class GeminiClient {
     )
 
     fun generateContent(config: PromptConfig, callback: (String?) -> Unit) {
-        val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=$apiKey"
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=$apiKey"
         
         val systemPrompt = "You are a helpful writing assistant. Your task is to rewrite the text provided by the user. " +
                 "Do not add any conversational filler. Return ONLY the rewritten text."
