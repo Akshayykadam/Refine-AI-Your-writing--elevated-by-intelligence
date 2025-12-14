@@ -1,14 +1,56 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Linking, Platform, useColorScheme, ScrollView, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Platform, useColorScheme, ScrollView, SafeAreaView, NativeModules, NativeEventEmitter, ActivityIndicator } from 'react-native';
 
 const PRIMARY_COLOR = '#15C39A';
+const { LocalAIModule } = NativeModules;
 
 export default function App() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-
   const styles = getStyles(isDark);
+
+  const [isModelDownloaded, setIsModelDownloaded] = useState<boolean | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [downloadStatus, setDownloadStatus] = useState('');
+
+  useEffect(() => {
+    // Check if model is downloaded on mount
+    if (LocalAIModule) {
+      LocalAIModule.isModelDownloaded().then((downloaded: boolean) => {
+        setIsModelDownloaded(downloaded);
+      });
+
+      // Setup event listeners
+      const eventEmitter = new NativeEventEmitter(LocalAIModule);
+
+      const progressListener = eventEmitter.addListener('onDownloadProgress', (event) => {
+        setDownloadProgress(event.percent);
+        const mbDownloaded = Math.round(event.bytesDownloaded / (1024 * 1024));
+        const mbTotal = Math.round(event.totalBytes / (1024 * 1024));
+        setDownloadStatus(`${mbDownloaded} / ${mbTotal} MB`);
+      });
+
+      const completeListener = eventEmitter.addListener('onDownloadComplete', () => {
+        setIsDownloading(false);
+        setIsModelDownloaded(true);
+        setDownloadProgress(0);
+        setDownloadStatus('');
+      });
+
+      const errorListener = eventEmitter.addListener('onDownloadError', (event) => {
+        setIsDownloading(false);
+        setDownloadStatus(`Error: ${event.error}`);
+      });
+
+      return () => {
+        progressListener.remove();
+        completeListener.remove();
+        errorListener.remove();
+      };
+    }
+  }, []);
 
   const openSettings = () => {
     if (Platform.OS === 'android') {
@@ -20,6 +62,15 @@ export default function App() {
     Linking.openURL('https://github.com/Akshayykadam');
   };
 
+  const startDownload = () => {
+    if (LocalAIModule) {
+      setIsDownloading(true);
+      setDownloadProgress(0);
+      setDownloadStatus('Starting download...');
+      LocalAIModule.downloadModel();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style={isDark ? "light" : "dark"} />
@@ -27,7 +78,7 @@ export default function App() {
 
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.appTitle}>Refine.AI ✨</Text>
+          <Text style={styles.appTitle}>Refine.AI</Text>
           <Text style={styles.tagline}>Elevate your writing, everywhere.</Text>
         </View>
 
@@ -58,25 +109,46 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
+        {/* Local AI Section - Only show if model not downloaded */}
+        {isModelDownloaded === false && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Local AI</Text>
+            <Text style={styles.cardDescription}>
+              Download the AI model to enable offline text processing. This requires ~1.5 GB of storage.
+            </Text>
+
+            {isDownloading ? (
+              <View style={styles.progressContainer}>
+                <View style={styles.progressBar}>
+                  <View style={[styles.progressFill, { width: `${downloadProgress}%` }]} />
+                </View>
+                <Text style={styles.progressText}>{downloadProgress}% - {downloadStatus}</Text>
+              </View>
+            ) : (
+              <TouchableOpacity style={[styles.secondaryButton, { marginTop: 16 }]} onPress={startDownload}>
+                <Text style={styles.secondaryButtonText}>Download Model</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+
         {/* About Section */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>About</Text>
           <Text style={styles.cardDescription}>
-            Refine.AI is a system-wide writing assistant powered by Gemini. It helps you rewrite, correct, and tone-switch your text directly within your favorite apps.
+            Refine.AI is a system-wide writing assistant powered by Gemini AI with optional on-device processing via Gemma 2B. Rewrite, correct, and tone-switch your text in any app.
           </Text>
           <Text style={[styles.cardDescription, { marginTop: 10 }]}>
-            Privacy First: Logic runs locally where possible, and text is only processed when you explicitly ask for it.
+            Privacy First: With Local AI mode, your text never leaves your device. Cloud mode uses encrypted transmission only when you tap Rewrite.
           </Text>
         </View>
 
         {/* Developer Section */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Developer</Text>
-          <Text style={styles.cardDescription}>
-            Built with ❤️ by Akshay Kadam.
-          </Text>
-          <TouchableOpacity style={styles.secondaryButton} onPress={openGitHub}>
-            <Text style={styles.secondaryButtonText}>Visit My GitHub</Text>
+          <Text style={styles.cardDescription}>Akshay Kadam</Text>
+          <TouchableOpacity style={[styles.primaryButton, { marginTop: 16 }]} onPress={openGitHub}>
+            <Text style={styles.primaryButtonText}>View on GitHub</Text>
           </TouchableOpacity>
         </View>
 
@@ -186,5 +258,25 @@ const getStyles = (isDark: boolean) => StyleSheet.create({
     color: isDark ? '#FFFFFF' : '#1C1C1E',
     fontSize: 16,
     fontWeight: '600',
+  },
+  progressContainer: {
+    marginTop: 16,
+  },
+  progressBar: {
+    height: 8,
+    backgroundColor: isDark ? '#2C2C2E' : '#E5E5EA',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: PRIMARY_COLOR,
+    borderRadius: 4,
+  },
+  progressText: {
+    marginTop: 8,
+    fontSize: 13,
+    color: isDark ? '#A1A1A6' : '#86868B',
+    textAlign: 'center',
   },
 });

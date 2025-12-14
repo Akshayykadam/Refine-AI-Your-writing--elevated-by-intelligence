@@ -35,12 +35,27 @@
             android:textStyle="bold"
             android:textColor="@color/text_primary"
             android:fontFamily="sans-serif-medium"/>
+
+        <Switch
+            android:id="@+id/switch_use_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="On-Device"
+            android:checked="true"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:thumbTint="@color/btn_primary"
+            android:trackTint="@color/chip_background"
+            android:textColor="@color/text_primary"
+            android:layout_marginEnd="8dp"
+            />
+
             
         <Button
             android:id="@+id/btn_close"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:text="✕"
+            android:text="X"
             android:textSize="18sp"
             android:textColor="@color/text_secondary"
             android:background="?android:attr/selectableItemBackgroundBorderless"
@@ -48,6 +63,24 @@
             android:padding="0dp"
             style="?android:attr/borderlessButtonStyle"/>
     </LinearLayout>
+
+    <!-- Model Download Note (Plain Text) -->
+    <TextView
+        android:id="@+id/download_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:text="*Note: Download AI model in app to enable offline mode"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="12dp"/>
+
+    <View
+        android:id="@+id/download_progress_section"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"/>
 
     <!-- Preview Card -->
     <TextView
@@ -144,6 +177,8 @@
                 android:paddingEnd="16dp"
                 android:stateListAnimator="@null"
                 style="?android:attr/borderlessButtonStyle"/>
+
+
 
             <Button
                 android:id="@+id/chip_professional"

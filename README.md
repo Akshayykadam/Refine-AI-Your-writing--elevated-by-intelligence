@@ -1,86 +1,101 @@
-# Refine.AI
-
-**Refine.AI** is a premium, system-wide writing assistant for Android that seamlessly integrates into your daily workflow. Designed with a philosophy of "invisible until needed," it brings the power of **Gemini AI** to every text field on your device.
-
-Refine.AI doesn't just check grammar; it transforms your communication, helping you sound more professional, warm, or even romantic with a single tap.
+<h1 align="center">Refine.AI</h1>
 
 <p align="center">
-  <img src="./assets/icon.png" width="120" alt="Refine.AI Logo" />
+  <strong>Your AI Writing Assistant, Everywhere</strong><br>
+  <em>Powered by Gemini AI + Optional On-Device Processing</em>
 </p>
 
-## ✨ Magic in Your Workflow
-
--   **🪄 System-Wide Integration**: Works everywhere you type—WhatsApp, Gmail, Slack, Notes, and more.
--   **👆 Select to Refine**: Just select text, and the magical sparkle bubble appears. No copying, pasting, or app switching.
--   **🖐️ Drag to Dismiss**: Finished? Simply drag the bubble to the bottom "X" to dismiss it instantly.
--   **🎨 Premium Aesthetic**: A stunning, dark-mode first UI inspired by modern design controls.
-
-## 🎭 Intelligent Tones
-
-Refine.AI offers a curated set of tones to match every context:
-
--   **Refine**: Pure improvement. Fixes grammar and enhances clarity without changing your voice.
--   **Professional**: Polish your drafts into executive-ready communication.
--   **Casual**: Relax the vibe for chats with friends.
--   **Warm**: Make your message sound kind, human, and approachable.
--   **Love**: Add a touch of romance and affection for special moments.
--   **Emojify**: sprinkle relevant emojis to add personality. ⚡️
-
-## 🛠 Tech Stack
-
--   **Frontend UI**: React Native (Expo) for Settings & Onboarding.
--   **Core Engine**: Native Kotlin (Android AccessibilityService) for system overlay and text manipulation.
--   **AI Engine**: Google Gemini Flash (Latest) for lightning-fast, context-aware responses.
-
-## 🚀 Setup & Installation
-
-### Prerequisites
--   Node.js & npm/yarn
--   Android Studio & SDK
--   Gemini API Key ([Get one here](https://aistudio.google.com/))
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/yourusername/refine-ai.git
-cd refine-ai
-```
-
-### 2. Configure API Key
-Create a `local.properties` file in the `android/` directory to securely store your API key:
-```properties
-sdk.dir=/path/to/your/android/sdk
-GEMINI_API_KEY=your_actual_api_key_here
-```
-
-### 3. Build and Run
-```bash
-# Install dependencies
-npm install
-
-# Build the native project
-npx expo prebuild
-
-# Run on Android Device
-npx expo run:android
-```
-
-## 📖 How to Use
-
-1.  **Enable Permission**: Open Refine.AI and grant the requested Accessibility permission.
-2.  **Select Text**: In any app, press and hold to select text.
-3.  **Tap the Sparkle**: The glowing Refine bubble will appear next to your cursor.
-4.  **Choose Your Vibe**: Select a chip (e.g., *Refine*, *Warm*, *Professional*).
-5.  **Refine**: Watch your text transform instantly.
-6.  **Replace**: Tap the checkmark to swap your original text with the magic version.
-
-## 🔒 Privacy First
-
-Refine.AI is built with privacy at its core.
--   **On-Device Logic**: The app only "sees" the text you explicitly select.
--   **No Background Snooping**: The accessibility service only activates on specific text selection events.
--   **Secure Transmission**: Text is sent encrypted directly to the Gemini API only when you tap "Rewrite".
--   **Password Safe**: Automatically ignores password fields and sensitive input types.
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Android-green?style=flat-square" />
+  <img src="https://img.shields.io/badge/AI-Gemini%20Flash-blue?style=flat-square" />
+  <img src="https://img.shields.io/badge/Local%20AI-Gemma%202B-orange?style=flat-square" />
+</p>
 
 ---
 
-*Refine your world, one word at a time.*
+## What is Refine.AI?
+
+Refine.AI is a **system-wide writing assistant** that works in any Android app. Select text, tap the floating bubble, and instantly transform your writing with AI-powered suggestions.
+
+### Key Features
+
+| Feature | Description |
+|:---|:---|
+| **System-Wide** | Works in WhatsApp, Gmail, Slack, Notes, and more |
+| **One-Tap Refine** | Select text → Tap bubble → Done |
+| **Local AI Mode** | Offline processing with Gemma 2B (~1.5GB) |
+| **Privacy First** | Your text, your device, your control |
+
+---
+
+## Intelligent Tones
+
+Choose the perfect voice for every message:
+
+- **Refine** — Fix grammar and enhance clarity
+- **Professional** — Executive-ready communication  
+- **Casual** — Friendly and relaxed
+- **Warm** — Kind and approachable
+- **Love** — Affectionate language
+- **Emojify** — Add relevant emojis
+
+---
+
+## Tech Stack
+
+```
+Frontend UI      →  React Native (Expo)
+Core Engine      →  Kotlin AccessibilityService
+Cloud AI         →  Google Gemini Flash
+Local AI         →  MediaPipe + Gemma 2B (Int4)
+```
+
+---
+
+## Quick Start
+
+```bash
+# Clone
+git clone https://github.com/Akshayykadam/Refine-AI-Your-writing--elevated-by-intelligence.git
+cd ai-writing-assistant
+
+# Install
+npm install
+
+# Configure (create android/local.properties)
+echo "GEMINI_API_KEY=your_key_here" >> android/local.properties
+
+# Build & Run
+npx expo prebuild
+npx expo run:android
+```
+
+---
+
+## Local AI Setup
+
+Want offline processing? Download the AI model directly in the app:
+
+1. Open **Refine.AI**
+2. Tap **Download Model** (~1.5 GB)
+3. Enable **On-Device** toggle in the overlay
+
+> The model runs entirely on your device — no internet required.
+
+---
+
+## Privacy
+
+- Only processes text you explicitly select
+- Password fields are automatically ignored
+- Local AI mode keeps all data on-device
+
+---
+
+<p align="center">
+  <strong>Refine your world, one word at a time.</strong>
+</p>
+
+<p align="center">
+  Made by <a href="https://github.com/Akshayykadam">Akshay Kadam</a>
+</p>

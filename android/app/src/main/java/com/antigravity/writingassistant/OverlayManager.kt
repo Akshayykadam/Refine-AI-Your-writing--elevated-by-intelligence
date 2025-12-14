@@ -12,7 +12,6 @@ class OverlayManager(private val context: Context) {
 
     private val windowManager: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var bubbleView: View? = null
-
     private var removeView: View? = null
 
     private fun showRemoveView() {
@@ -59,7 +58,7 @@ class OverlayManager(private val context: Context) {
                 PixelFormat.TRANSLUCENT
             )
             
-            params.gravity = Gravity.TOP or Gravity.START // Use Top/Start for explicit coordinates
+            params.gravity = Gravity.TOP or Gravity.START
             params.x = 0
             params.y = 200
 
@@ -68,7 +67,7 @@ class OverlayManager(private val context: Context) {
                 private var initialY = 0
                 private var initialTouchX = 0f
                 private var initialTouchY = 0f
-                private val touchSlop = 10 // Simple threshold, better to use ViewConfiguration
+                private val touchSlop = 10
                 private var isDragging = false
 
                 override fun onTouch(v: View, event: android.view.MotionEvent): Boolean {
@@ -80,79 +79,56 @@ class OverlayManager(private val context: Context) {
                             initialTouchX = event.rawX
                             initialTouchY = event.rawY
                             isDragging = false
-                            
-                            // Show Remove Target
                             showRemoveView()
                             return true
                         }
                         android.view.MotionEvent.ACTION_MOVE -> {
                             val dx = event.rawX - initialTouchX
                             val dy = event.rawY - initialTouchY
-                            
                             if (kotlin.math.abs(dx) > touchSlop || kotlin.math.abs(dy) > touchSlop) {
                                 isDragging = true
                             }
-                            
                             layoutParams.x = initialX + dx.toInt()
                             layoutParams.y = initialY + dy.toInt()
                             windowManager.updateViewLayout(v, layoutParams)
                             
-                            // Check overlap with Remove View
+                            // Check overlap
                             if (removeView != null) {
                                 val bubbleLoc = IntArray(2)
                                 v.getLocationOnScreen(bubbleLoc)
                                 val bubbleCenterX = bubbleLoc[0] + v.width / 2
                                 val bubbleCenterY = bubbleLoc[1] + v.height / 2
-                                
                                 val removeLoc = IntArray(2)
                                 removeView!!.getLocationOnScreen(removeLoc)
                                 val removeCenterX = removeLoc[0] + removeView!!.width / 2
                                 val removeCenterY = removeLoc[1] + removeView!!.height / 2
-                                
-                                val distance = Math.sqrt(
-                                    Math.pow((bubbleCenterX - removeCenterX).toDouble(), 2.0) +
-                                    Math.pow((bubbleCenterY - removeCenterY).toDouble(), 2.0)
-                                )
-                                
-                                // Simple threshold: if centers are close (e.g. < 150px)
+                                val distance = Math.sqrt(Math.pow((bubbleCenterX - removeCenterX).toDouble(), 2.0) + Math.pow((bubbleCenterY - removeCenterY).toDouble(), 2.0))
                                 if (distance < 150) {
-                                    removeView?.scaleX = 1.2f
-                                    removeView?.scaleY = 1.2f
+                                    removeView?.scaleX = 1.2f; removeView?.scaleY = 1.2f
                                 } else {
-                                    removeView?.scaleX = 1.0f
-                                    removeView?.scaleY = 1.0f
+                                    removeView?.scaleX = 1.0f; removeView?.scaleY = 1.0f
                                 }
                             }
-                            
                             return true
                         }
                         android.view.MotionEvent.ACTION_UP -> {
-                            // Valid Drop Logic
                             var dismissed = false
                             if (isDragging && removeView != null) {
                                 val bubbleLoc = IntArray(2)
                                 v.getLocationOnScreen(bubbleLoc)
                                 val bubbleCenterX = bubbleLoc[0] + v.width / 2
                                 val bubbleCenterY = bubbleLoc[1] + v.height / 2
-                                
                                 val removeLoc = IntArray(2)
                                 removeView!!.getLocationOnScreen(removeLoc)
                                 val removeCenterX = removeLoc[0] + removeView!!.width / 2
                                 val removeCenterY = removeLoc[1] + removeView!!.height / 2
-                                
-                                val distance = Math.sqrt(
-                                    Math.pow((bubbleCenterX - removeCenterX).toDouble(), 2.0) +
-                                    Math.pow((bubbleCenterY - removeCenterY).toDouble(), 2.0)
-                                )
-                                
+                                val distance = Math.sqrt(Math.pow((bubbleCenterX - removeCenterX).toDouble(), 2.0) + Math.pow((bubbleCenterY - removeCenterY).toDouble(), 2.0))
                                 if (distance < 150) {
                                     hideBubble()
                                     dismissed = true
                                 }
                             }
-                        
                             hideRemoveView()
-                            
                             if (!dismissed && !isDragging) {
                                 onBubbleClick()
                             }
@@ -171,8 +147,6 @@ class OverlayManager(private val context: Context) {
 
     private var panelView: View? = null
 
-    // ... (existing showBubble code)
-
     private fun onBubbleClick() {
         android.util.Log.d("OverlayManager", "Bubble Clicked")
         hideBubble()
@@ -185,13 +159,14 @@ class OverlayManager(private val context: Context) {
     
     var listener: OverlayListener? = null
 
+    // MEMBERS
+    private val localEngine by lazy { com.antigravity.writingassistant.local.LocalRewriteEngine(context) }
     private val geminiClient = GeminiClient()
+    
     private var currentText: String = ""
     private var currentPackageName: String = ""
     private var originalTextBeforeRewrite: String = ""
     private var lastRewrittenText: String? = null
-    
-    // Context data passed from Service
     private var contextBefore: String? = null
     private var contextAfter: String? = null
     
@@ -205,8 +180,6 @@ class OverlayManager(private val context: Context) {
         contextBefore = before
         contextAfter = after
     }
-
-    // ... (existing showBubble code) ...
 
     private fun showActionPanel() {
         if (panelView != null) return
@@ -223,10 +196,30 @@ class OverlayManager(private val context: Context) {
                 showBubble() 
             }
             
-            val inputInstruction = panelView?.findViewById<android.widget.EditText>(R.id.input_instruction)
-            // Context toggle removed per user request
+            // Download note - just show text when model missing
+            val downloadSection = panelView?.findViewById<View>(R.id.download_section)
             
-            // Restore Preferences
+            val switchUseLocal = panelView?.findViewById<android.widget.Switch>(R.id.switch_use_local)
+            val modelAvailable = localEngine.isModelAvailable()
+            
+            // Configure toggle and note based on model state
+            if (modelAvailable) {
+                // Model exists: enable toggle, hide note
+                switchUseLocal?.isEnabled = true
+                switchUseLocal?.isChecked = prefs.getBoolean("use_local_ai", true)
+                downloadSection?.visibility = View.GONE
+            } else {
+                // Model missing: disable toggle, show note
+                switchUseLocal?.isEnabled = false
+                switchUseLocal?.isChecked = false
+                downloadSection?.visibility = View.VISIBLE
+            }
+            
+            switchUseLocal?.setOnCheckedChangeListener { _, isChecked ->
+                prefs.edit().putBoolean("use_local_ai", isChecked).apply()
+            }
+            
+            val inputInstruction = panelView?.findViewById<android.widget.EditText>(R.id.input_instruction)
             val lastInstruction = prefs.getString("last_instruction_$currentPackageName", "")
             inputInstruction?.setText(lastInstruction)
             
@@ -242,20 +235,18 @@ class OverlayManager(private val context: Context) {
             val chipEmojify = panelView?.findViewById<View>(R.id.chip_emojify)
             val chipGrammar = panelView?.findViewById<View>(R.id.chip_grammar)
 
+
             val allChips = listOfNotNull(chipRefine, chipGrammar, chipProfessional, chipCasual, chipConcise, chipWarm, chipLove, chipEmojify)
             
             var selectedChipInstruction: String? = "Rewrite the text to be clearer, more fluent, and easier to read while preserving the original meaning, intent, and length. Improve grammar, sentence flow, and word choice. Do not add new ideas, remove information, or change the tone. Keep it natural and neutral."
 
-            // Chips logic
             val chipListener = View.OnClickListener { v ->
                 val btn = v as android.widget.Button
                 var text = btn.text.toString()
                 
-                // Toggle Selection State
                 allChips.forEach { it.isSelected = false }
                 v.isSelected = true
                 
-                // Map Custom instructions for specific chips
                 if (text.equals("Warm", ignoreCase = true)) {
                     selectedChipInstruction = "Rewrite the text in a warm, supportive, and human tone. Sound approachable, respectful, and emotionally aware without being overly sentimental. Keep the message clear and sincere. Do not exaggerate emotions or add unnecessary affection. Preserve the original meaning."
                 } else if (text.equals("Love", ignoreCase = true)) {
@@ -272,31 +263,25 @@ class OverlayManager(private val context: Context) {
                     selectedChipInstruction = "Rewrite the text in a relaxed, friendly, and conversational tone. Keep it simple and natural, as if speaking to a colleague or friend. Avoid sounding overly formal or robotic. Do not use emojis. Preserve the original meaning and intent."
                 } else if (text.equals("Concise", ignoreCase = true)) {
                      selectedChipInstruction = "Rewrite the text to be shorter and more concise without losing key information."
+
                 } else {
                     selectedChipInstruction = "Make it $text"
                 }
                 
-                // Hide prompt from user, but keep selection logic active
-                // If user types, we ignore chip instruction
                 inputInstruction?.setText("")
                 inputInstruction?.clearFocus()
             }
-            // Bind listeners
             allChips.forEach { it.setOnClickListener(chipListener) }
             
-            // Default Selection: Refine (simulating click)
             if (inputInstruction?.text.isNullOrEmpty()) {
                 chipRefine?.performClick()
             }
-            
             
             val rewriteBtn = panelView?.findViewById<View>(R.id.btn_rewrite)
             val loadingIndicator = panelView?.findViewById<View>(R.id.loading_indicator)
             val resultActions = panelView?.findViewById<View>(R.id.result_actions)
             val replaceBtn = panelView?.findViewById<View>(R.id.btn_replace)
             val compareBtn = panelView?.findViewById<android.widget.Button>(R.id.btn_compare)
-            
-            // ... (focus logic skipped) ...
             
             rewriteBtn?.setOnClickListener {
                 if (BuildConfig.GEMINI_API_KEY.isEmpty()) {
@@ -309,17 +294,42 @@ class OverlayManager(private val context: Context) {
                 
                 var instruction = inputInstruction?.text.toString()
                 
-                // Use Chip instruction if input is empty
                 if (instruction.isBlank()) {
                     instruction = selectedChipInstruction ?: "Refine this text to be better"
                 }
 
+                // LOCAL ENGINE CHECK
+                val isLocal = switchUseLocal?.isChecked == true
+                if (isLocal) {
+                     localEngine.rewrite(currentText, instruction) { result ->
+                         android.os.Handler(android.os.Looper.getMainLooper()).post {
+                             previewTextView?.text = result
+                             lastRewrittenText = result
+                             loadingIndicator?.visibility = View.GONE
+                             resultActions?.visibility = View.VISIBLE
+                             
+                             replaceBtn?.setOnClickListener {
+                                listener?.onReplace(result)
+                                hideActionPanel()
+                             }
+                             
+                             compareBtn?.setOnClickListener {
+                                if (previewTextView?.text == lastRewrittenText) {
+                                    previewTextView?.text = originalTextBeforeRewrite
+                                    compareBtn.text = "Show Rewrite"
+                                } else {
+                                    previewTextView?.text = lastRewrittenText
+                                    compareBtn.text = "Show Original"
+                                }
+                            }
+                         }
+                     }
+                     return@setOnClickListener
+                }
+
+                // CLOUD ENGINE
                 val useContext = true 
-                
-                // Save Preferences
-                prefs.edit()
-                    .putString("last_instruction_$currentPackageName", instruction)
-                    .apply()
+                prefs.edit().putString("last_instruction_$currentPackageName", instruction).apply()
                 
                 val config = GeminiClient.PromptConfig(
                     originalText = currentText,
@@ -341,7 +351,6 @@ class OverlayManager(private val context: Context) {
                                 hideActionPanel()
                             }
                             
-                            // Compare Toggle Logic
                             compareBtn?.setOnClickListener {
                                 if (previewTextView?.text == lastRewrittenText) {
                                     previewTextView?.text = originalTextBeforeRewrite
@@ -351,7 +360,6 @@ class OverlayManager(private val context: Context) {
                                     compareBtn.text = "Show Original"
                                 }
                             }
-                            
                         } else {
                              loadingIndicator?.visibility = View.GONE
                              rewriteBtn.visibility = View.VISIBLE
@@ -360,13 +368,6 @@ class OverlayManager(private val context: Context) {
                     }
                 }
             }
-            
-            // Important: To allow EditText input, we need valid window flags.
-            // If we use FLAG_NOT_FOCUSABLE, Edit text won't receive input.
-            // But if we remove it, we steal focus from the underlying app (closing keypad).
-            // For this phase, we accept this trade-off: The Assistant Panel takes focus when open.
-            // To fix this, we update flags when showing Panel.
-
 
             val params = WindowManager.LayoutParams(
                 WindowManager.LayoutParams.MATCH_PARENT,
@@ -376,7 +377,7 @@ class OverlayManager(private val context: Context) {
                 PixelFormat.TRANSLUCENT
             )
             params.gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-            params.y = 0 // Remove Y offset since it's bottom gravity
+            params.y = 0
 
             windowManager.addView(panelView, params)
         } catch (e: Exception) {
