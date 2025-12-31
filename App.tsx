@@ -3,10 +3,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet, Text, View, TouchableOpacity, Linking, Platform,
   ScrollView, SafeAreaView, NativeModules, AppState, Dimensions,
-  FlatList, useColorScheme, TextInput, ActivityIndicator
+  FlatList, useColorScheme, TextInput, ActivityIndicator, Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { checkUpdate, downloadUpdate, ReleaseInfo } from './UpdateService';
+import packageJson from './package.json';
 
 const { width } = Dimensions.get('window');
 
@@ -79,6 +81,34 @@ export default function App() {
   const [outputText, setOutputText] = useState('');
   const [selectedStyle, setSelectedStyle] = useState('Refine');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Update Logic
+  const [updateInfo, setUpdateInfo] = useState<ReleaseInfo | null>(null);
+  const [isUpdateDownloading, setIsUpdateDownloading] = useState(false);
+  const [updateProgress, setUpdateProgress] = useState(0);
+
+  useEffect(() => {
+    checkForUpdates();
+  }, []);
+
+  const checkForUpdates = async () => {
+    const info = await checkUpdate(packageJson.version);
+    if (info) {
+      setUpdateInfo(info);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!updateInfo) return;
+    setIsUpdateDownloading(true);
+    const uri = await downloadUpdate(updateInfo.downloadUrl, updateInfo.fileName, (p) => setUpdateProgress(p));
+    setIsUpdateDownloading(false);
+    if (uri) {
+      GeminiModule.installApk(uri);
+    } else {
+      Alert.alert("Error", "Failed to download update.");
+    }
+  };
 
   const stylesList = ['Refine', 'Grammar', 'Professional', 'Casual', 'Concise', 'Warm', 'Love', 'Emojify', 'Hinglish'];
 
@@ -391,6 +421,43 @@ export default function App() {
           </View>
         </View>
 
+        {/* App Updates */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>App Updates</Text>
+          <View>
+            <Text style={styles.cardDescription}>Current Version: v{packageJson.version}</Text>
+            {updateInfo ? (
+              <View style={{ marginTop: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                  <Ionicons name="gift-outline" size={20} color={colors.primary} />
+                  <Text style={{ fontWeight: '700', fontSize: 16, marginLeft: 8, color: colors.textPrimary }}>New Update Available: v{updateInfo.version}</Text>
+                </View>
+                <Text style={{ color: colors.textSecondary, marginBottom: 12 }}>{updateInfo.notes}</Text>
+
+                {isUpdateDownloading ? (
+                  <View>
+                    <Text style={{ marginBottom: 8, color: colors.textSecondary }}>Downloading... {Math.round(updateProgress * 100)}%</Text>
+                    <View style={{ height: 4, backgroundColor: colors.cardBorder, borderRadius: 2 }}>
+                      <View style={{ width: `${updateProgress * 100}%`, height: '100%', backgroundColor: colors.textPrimary, borderRadius: 2 }} />
+                    </View>
+                  </View>
+                ) : (
+                  <TouchableOpacity style={[styles.primaryButtonWrapper]} onPress={handleUpdate}>
+                    <View style={styles.primaryButton}>
+                      <Text style={styles.primaryButtonText}>Download & Install</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                <Ionicons name="checkmark-circle-outline" size={18} color={colors.textSecondary} />
+                <Text style={{ color: colors.textSecondary, marginLeft: 6 }}>You are on the latest version.</Text>
+              </View>
+            )}
+          </View>
+        </View>
+
         {/* About */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>About</Text>
@@ -423,7 +490,7 @@ export default function App() {
         <Text style={styles.versionText}>Version 1.0.0</Text>
 
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 }
 

@@ -66,6 +66,28 @@ class GeminiModule(reactContext: ReactApplicationContext) : ReactContextBaseJava
     }
 
     @ReactMethod
+    fun installApk(filePath: String) {
+        try {
+            val path = if (filePath.startsWith("file://")) filePath.replace("file://", "") else filePath
+            val file = java.io.File(path)
+            if (file.exists()) {
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
+                val uri = androidx.core.content.FileProvider.getUriForFile(
+                    reactApplicationContext,
+                    reactApplicationContext.packageName + ".provider",
+                    file
+                )
+                intent.setDataAndType(uri, "application/vnd.android.package-archive")
+                intent.addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                reactApplicationContext.startActivity(intent)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    @ReactMethod
     fun addListener(eventName: String) {
         // Required for RN event emitter
     }

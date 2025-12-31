@@ -35,9 +35,22 @@ Choose the perfect voice for every message:
 - **Refine** — Fix grammar and enhance clarity
 - **Professional** — Executive-ready communication  
 - **Casual** — Friendly and relaxed
+- **Hinglish** — Natural mix of Hindi and English 🇮🇳
 - **Warm** — Kind and approachable
 - **Love** — Affectionate language
 - **Emojify** — Add relevant emojis
+
+---
+
+## What's New in v0.0.2
+
+- **Stability Improvements**: Fixed a crash issue when the screen is locked.
+- **UI Polish**: Improved icon contrast for better visibility in Light Mode.
+- **Hinglish Support**: Rewrite text in natural Hindi-English mix.
+- **Main App Playground**: Test AI rewriting directly inside the app.
+- **Smart Privacy**: Popups auto-close on lock screen or app switch.
+- **Sleek Monochrome UI**: Premium dark/light themes with adaptive icons.
+- **Copy Support**: One-tap copy for quick sharing.
 
 ---
 
