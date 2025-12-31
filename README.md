@@ -45,6 +45,7 @@ Choose the perfect voice for every message:
 ## What's New in v0.0.2
 
 - **Stability Improvements**: Fixed a crash issue when the screen is locked.
+- **In-App Update System**: Automatically check for and install updates from GitHub Releases.
 - **UI Polish**: Improved icon contrast for better visibility in Light Mode.
 - **Hinglish Support**: Rewrite text in natural Hindi-English mix.
 - **Main App Playground**: Test AI rewriting directly inside the app.

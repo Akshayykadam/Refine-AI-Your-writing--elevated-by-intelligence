@@ -43,6 +43,8 @@ class WritingAssistService : AccessibilityService() {
         
         if (focusedNode.isEditable && !focusedNode.isPassword) {
             val currentText = focusedNode.text
+            var success = false
+            
             if (currentText != null) {
                 val start = focusedNode.textSelectionStart
                 val end = focusedNode.textSelectionEnd
@@ -56,16 +58,42 @@ class WritingAssistService : AccessibilityService() {
                     
                     val arguments = android.os.Bundle()
                     arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, sb.toString())
-                    focusedNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+                    success = focusedNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+                    
+                    if (!success) {
+                        copyToClipboard(newText)
+                        success = focusedNode.performAction(AccessibilityNodeInfo.ACTION_PASTE)
+                    }
                 } else {
                     val arguments = android.os.Bundle()
                     arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, newText)
-                    focusedNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+                    success = focusedNode.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments)
+                    
+                    if (!success) {
+                         copyToClipboard(newText)
+                         success = focusedNode.performAction(AccessibilityNodeInfo.ACTION_PASTE)
+                    }
                 }
             }
-            focusedNode.recycle()
+            
+            if (!success) {
+                // Fallback: Copy to clipboard and notify user
+                copyToClipboard(newText)
+                android.widget.Toast.makeText(this, "Text copied to clipboard. Paste it manually.", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
+        focusedNode.recycle()
         root.recycle()
+    }
+
+    private fun copyToClipboard(text: String) {
+        try {
+            val clipboard = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("RefineAI", text)
+            clipboard.setPrimaryClip(clip)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {

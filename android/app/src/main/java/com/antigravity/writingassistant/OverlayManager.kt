@@ -229,7 +229,7 @@ class OverlayManager(private val context: Context) {
                 } else if (text.equals("Love", ignoreCase = true)) {
                     selectedChipInstruction = "Rewrite the text with gentle affection and care, expressing warmth, appreciation, and emotional closeness. Keep it sincere and balanced—avoid romantic excess, poetic language, or dramatic expressions. The tone should feel caring and respectful, not intense or flirtatious. Preserve the original intent."
                 } else if (text.equals("Emojify", ignoreCase = true)) {
-                    selectedChipInstruction = "Rewrite the text to be clear and engaging, then add a small number of relevant emojis to enhance expression. Emojis should feel natural and supportive, not excessive or distracting. Do not change the original meaning or make the message childish. Limit emojis to 1–3 per paragraph."
+                    selectedChipInstruction = "Analyze the text and add relevant emojis to it. Key rules: 1. Keep text EXACTLY as is. 2. Only insert emojis at appropriate places. 3. Do NOT rewrite the original text."
                 } else if (text.equals("Hinglish", ignoreCase = true)) {
                     selectedChipInstruction = "Rewrite the text in casual Hinglish (a natural mix of Hindi and English) as spoken by urban Indians. Use common Hindi words written in Roman script (like 'karna', 'matlab', 'bilkul', 'mast', 'yaar'). Keep the tone conversational, friendly, and informal. Preserve the original meaning but make it sound like a natural text message or chat."
                 } else if (text.equals("Refine", ignoreCase = true)) {

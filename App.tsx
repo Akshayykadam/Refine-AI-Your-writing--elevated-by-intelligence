@@ -116,7 +116,7 @@ export default function App() {
     switch (style) {
       case 'Warm': return "Rewrite the text in a warm, supportive, and human tone. Sound approachable, respectful, and emotionally aware without being overly sentimental.";
       case 'Love': return "Rewrite the text with gentle affection and care, expressing warmth, appreciation, and emotional closeness.";
-      case 'Emojify': return "Rewrite the text to be clear and engaging, then add a small number of relevant emojis to enhance expression.";
+      case 'Emojify': return "Analyze the text and add relevant emojis to it. Key rules: 1. Keep text EXACTLY as is. 2. Only insert emojis at appropriate places. 3. Do NOT rewrite the original text.";
       case 'Hinglish': return "Rewrite the text in casual Hinglish (a natural mix of Hindi and English) as spoken by urban Indians. Use common Hindi words written in Roman script.";
       case 'Refine': return "Rewrite the text to be clearer, more fluent, and easier to read while preserving the original meaning.";
       case 'Grammar': return "Check the text for grammar, spelling, punctuation, and basic sentence structure errors. Correct only what is necessary.";
@@ -125,6 +125,55 @@ export default function App() {
       case 'Concise': return "Rewrite the text to be shorter and more concise without losing key information.";
       default: return "Refine this text";
     }
+  };
+
+  const parseBold = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <Text key={i} style={{ fontWeight: 'bold', color: colors.textPrimary }}>{part.slice(2, -2)}</Text>;
+      }
+      return <Text key={i}>{part}</Text>;
+    });
+  };
+
+  const renderReleaseNotes = (notes: string) => {
+    return notes.split('\n').map((line, index) => {
+      const trimmed = line.trim();
+      if (!trimmed) return null;
+
+      if (trimmed.startsWith('##') || trimmed.startsWith('###')) {
+        return (
+          <Text key={index} style={{
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: colors.textPrimary,
+            marginTop: 12,
+            marginBottom: 8
+          }}>
+            {trimmed.replace(/^#+\s*/, '')}
+          </Text>
+        );
+      }
+
+      if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        const content = trimmed.substring(2);
+        return (
+          <View key={index} style={{ flexDirection: 'row', marginBottom: 4, paddingLeft: 4 }}>
+            <Text style={{ color: colors.textSecondary, marginRight: 6, fontSize: 14 }}>{'\u2022'}</Text>
+            <Text style={{ color: colors.textSecondary, fontSize: 14, flex: 1, lineHeight: 20 }}>
+              {parseBold(content)}
+            </Text>
+          </View>
+        );
+      }
+
+      return (
+        <Text key={index} style={{ color: colors.textSecondary, marginBottom: 4, fontSize: 14 }}>
+          {parseBold(trimmed)}
+        </Text>
+      );
+    });
   };
 
   const handleRewrite = async () => {
@@ -340,7 +389,7 @@ export default function App() {
               >
                 <Text style={[
                   styles.chipText,
-                  selectedStyle === style ? { color: colors.buttonText } : { color: colors.textPrimary }
+                  selectedStyle === style ? { color: isDark ? '#000000' : colors.buttonText } : { color: colors.textPrimary }
                 ]}>{style}</Text>
               </TouchableOpacity>
             ))}
@@ -432,7 +481,9 @@ export default function App() {
                   <Ionicons name="gift-outline" size={20} color={colors.primary} />
                   <Text style={{ fontWeight: '700', fontSize: 16, marginLeft: 8, color: colors.textPrimary }}>New Update Available: v{updateInfo.version}</Text>
                 </View>
-                <Text style={{ color: colors.textSecondary, marginBottom: 12 }}>{updateInfo.notes}</Text>
+                <View style={{ marginBottom: 12 }}>
+                  {renderReleaseNotes(updateInfo.notes)}
+                </View>
 
                 {isUpdateDownloading ? (
                   <View>
